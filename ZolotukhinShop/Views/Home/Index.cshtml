@@ -1,0 +1,313 @@
+﻿@using DomainModule.Models
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.IdentityModel.Tokens
+@using ZolotukhinShop.Common
+@model ZolotukhinShop.ViewModels.IndexViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Home Page";
+}
+@{
+    string GetCategoryName(CategoryModel category)
+    {
+        return category.Name switch
+        {
+            "Laptop" => "Ноутбуки",
+            "Smartphone" => "Смартфоны",
+            "Tablet" => "Планшеты",
+            _ => "Неизвестно"
+        };
+    }
+}
+
+<style>
+    .main_form {
+        left: 0;
+        display: flex;
+        padding: 5px;
+        flex-direction: column;
+        gap: 15px;
+        max-width: 15%;
+        min-width: 280px;
+        height: max-content;
+        overflow-y: auto;
+    }
+
+    .product_list_container {
+        height: auto;
+        display: flex;
+        flex-direction: row;
+        align-content: flex-start;
+        justify-content: space-evenly;
+        width: 85%;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .card {
+        box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.1);
+        transition: 0.2s;
+        height: 520px;
+        border-radius: 8px;
+        justify-content: space-between;
+        background: white;
+        cursor: pointer;
+    }
+
+    .card:hover {
+        box-shadow: 0 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .card > img {
+        object-fit: contain;
+        margin: 10px auto;
+        aspect-ratio: 2000/2000;
+        height: 200px;
+        width: 200px;
+    }
+
+    .card_container {
+        padding: 16px;
+        width: 300px;
+    }
+
+    .sorts {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+    }
+
+    .filters {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .numeric_filter {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+    }
+
+    .numeric_filter input {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 8px;
+        width: 100%;
+    }
+
+    .search {
+        padding: 8px;
+        width: 100%;
+    }
+
+    .sort {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .drop_down_list {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        background: white;
+    }
+
+    button[type="submit"],
+    button[type="reset"] {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: 0.2s;
+        box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .main_div {
+        display: flex;
+        flex-direction: row;
+        gap: 50px;
+        padding: 20px;
+    }
+
+    .filter_card {
+        padding: 20px;
+        background-color: #f5f5f5;
+        box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    .search_card {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        justify-content: flex-start;
+    }
+    
+    .to_cart_button_wrapper{
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+<div class="main_div">
+    <form class="main_form">
+        <div class="filter_card search_card">
+            <input name="searchString" class="search rounded border shadow-sm" type="search" placeholder="Поиск"
+                   value="@Model.Filter.SearchString">
+            <button class="btn btn-primary search_button border rounded shadow-sm">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+        <div class="filter_card">
+            <div class="sorts shadow-sm">
+                <div class="sort">
+                    <label>Категория</label>
+                    @{
+                        List<SelectListItem> categories =
+                        [
+                            new() { Text = "Все", Value = "null", Selected = Model.Filter.CategoryId == null }
+                        ];
+                        categories.AddRange(Model.Categories.Select(categoryModel => new SelectListItem { Text = GetCategoryName(categoryModel), Value = categoryModel.Id.ToString(), Selected = Model.Filter.CategoryId == categoryModel.Id }));
+                    }
+                    @Html.DropDownList("categoryId", categories, new { onchange = "this.form.submit()", id = "category", @class = "drop_down_list" })
+                </div>
+                <div class="sort">
+                    <label>Сортировки</label>
+                    @Html.DropDownList("sortOrder", new List<SelectListItem>
+                    {
+                        new() { Text = "Нет", Value = "none", Selected = Model.Filter.SortOrder == "none" },
+                        new() { Text = "Цена по возрастанию", Value = "priceAsc", Selected = Model.Filter.SortOrder == "priceAsc" },
+                        new() { Text = "Цена по убыванию", Value = "priceDesc", Selected = Model.Filter.SortOrder == "priceDesc" },
+                        new() { Text = "Название по возрастанию", Value = "nameAsc", Selected = Model.Filter.SortOrder == "nameAsc" },
+                        new() { Text = "Название по убыванию", Value = "nameDesc", Selected = Model.Filter.SortOrder == "nameDesc" }
+                    }, new { onchange = "this.form.submit()", id = "priceSortOrder", @class = "drop_down_list" })
+                </div>
+            </div>
+        </div>
+        <div class="filter_card">
+            <div class="filters">
+                @Html.DoubleNumericFilter("Цена", "price", Model.Filter.PriceFrom, Model.Filter.PriceTo)
+                @if (Model.Products.Any(product => product.BatteryLifeTime != null))
+                {
+                    @Html.IntNumericFilter("Время жизни батареи", "batteryLifeTime",
+                        Model.Filter.BatteryLifeTimeFrom, Model.Filter.BatteryLifeTimeTo)
+                }
+                @if (Model.Products.Any(product => product.BatteryLifeTime != null))
+                {
+                    @Html.IntNumericFilter("Разрешение камеры", "cameraResolution",
+                        Model.Filter.CameraResolutionFrom, Model.Filter.CameraResolutionTo)
+                }
+                @if (Model.Products.Any(product => product.OsVersion != null))
+                {
+                    @Html.AccordionCheckboxes("Версия ОС", "osVersion",
+                        Model.Products.Where(product => product.OsVersion != null).Select(product => product.OsVersion).Distinct(),
+                        Model.Filter.OsVersion)
+                }
+                @if (Model.Products.Any(product => product.InternetConnectionType != null))
+                {
+                    @Html.AccordionCheckboxes("Тип интернет соединения", "internetConnectionType",
+                        Model.Products.Where(product => product.InternetConnectionType != null).Select(product => product.InternetConnectionType).Distinct(),
+                        Model.Filter.InternetConnectionType)
+                }
+                @if (Model.Products.Any(product => product.ScreenDiagonal != null))
+                {
+                    @Html.DoubleNumericFilter("Диагональ экрана", "screenDiagonal",
+                        Model.Filter.ScreenDiagonalFrom, Model.Filter.ScreenDiagonalTo)
+                }
+                @if (Model.Products.Any(product => product.MemorySize != null))
+                {
+                    @Html.IntNumericFilter("Объем памяти", "memorySize",
+                        Model.Filter.MemorySizeFrom, Model.Filter.MemorySizeTo)
+                }
+                @if (Model.Products.Any(product => product.DisplayMatrixType != null))
+                {
+                    @Html.AccordionCheckboxes("Тип матрицы экрана", "displayMatrixType",
+                        Model.Products.Where(product => product.DisplayMatrixType != null).Select(product => product.DisplayMatrixType).Distinct(),
+                        Model.Filter.DisplayMatrixType)
+                }
+                @if (Model.Products.Any(product => product.Weight != null))
+                {
+                    @Html.DoubleNumericFilter("Вес", "weight", Model.Filter.WeightFrom, Model.Filter.WeightTo)
+                }
+                @if (Model.Products.Any(product => product.CpuName != null))
+                {
+                    @Html.AccordionCheckboxes("Название процессора", "cpuName",
+                        Model.Products.Where(product => product.CpuName != null).Select(product => product.CpuName).Distinct(),
+                        Model.Filter.CpuName)
+                }
+                @if (Model.Products.Any(product => product.RamSize != null))
+                {
+                    @Html.IntNumericFilter("Объем оперативной памяти", "ramSize",
+                        Model.Filter.RamSizeFrom, Model.Filter.RamSizeTo)
+                }
+                @if (Model.Products.Any(product => product.GpuName != null))
+                {
+                    @Html.AccordionCheckboxes("Название видеокарты", "gpuName",
+                        Model.Products.Where(product => product.GpuName != null).Select(product => product.GpuName).Distinct(),
+                        Model.Filter.GpuName)
+                }
+            </div>
+        </div>
+
+        <button class="btn-primary" type="submit">Применить</button>
+        <button class="btn-secondary" type="reset" onclick="location.href='@Url.Action("Index", "Home")'">Сбросить
+        </button>
+    </form>
+    @if (Model.Products.IsNullOrEmpty())
+    {
+        <div class="product_list_container" style="align-content: center">
+            <div style="align-self: center;">
+                <h1>Товары не найдены</h1>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="product_list_container">
+            @foreach (var item in Model.Products)
+            {
+                <div class="card" onclick="location.href='@Url.Action("Details", "Home", new { id = item.Id })'">
+                    <img src="@Url.Content("~/Images/" + item.ImagePath)" alt="Изображение товара">
+                    <div class="card_container">
+                        <h4>@item.Brand @item.Name</h4>
+                        <p>
+                            <b>Категория: </b>
+                            <text>@GetCategoryName(item.Category)</text>
+                        </p>
+                        <p>
+                            <b>Цена: </b>@item.Price $
+                        </p>
+                        <p>
+                            <b>Описание: </b>
+                            <text>@item.Description</text>
+                        </p>
+                    </div>
+                    <div class="to_cart_button_wrapper">
+                        <form asp-controller="Cart" asp-action="AddToCart">
+                            <input type="hidden" name="id" value="@item.Id"/>
+                            <input type="hidden" name="urlAction" value="Index"/>
+                            <input type="hidden" name="controllerName" value="Home"/>
+                            <button class="to_cart_button btn btn-primary">
+                                Добавить в корзину
+                                <i class="bi bi-cart"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

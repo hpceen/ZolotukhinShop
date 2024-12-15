@@ -1,0 +1,82 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using ZolotukhinShop.Common
+@model DomainModule.Models.ProductModel
+
+@{
+    ViewData["Title"] = "Детальный просмотр";
+}
+
+<style>
+
+    .card_container > img {
+        padding: 10px;
+        object-fit: contain;
+        height: 500px;
+    }
+
+    .card_container {
+        box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-evenly;
+        padding: 10px 16px;
+    }
+
+    .right_container {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .text_container {
+        align-items: start;
+        font-size: 25px;
+    }
+
+    .to_cart_button {
+        height: fit-content;
+        width: fit-content;
+        margin: 10px;
+        font-size: 25px;
+        border: none;
+        display: flex;
+        align-items: center;
+        padding: 20px 30px;
+        border-radius: 5px;
+    }
+
+    .to_cart_button > i {
+        font-size: 30px;
+        margin-left: 30px;
+    }
+
+    .main_div {
+        padding: 50px 100px;
+    }
+</style>
+
+<div class="main_div">
+    <h1>@Model.Brand @Model.Name</h1>
+    <hr/>
+    <div class="card_container">
+        <img src="@Url.Content("~/Images/" + Model.ImagePath)" alt="Product Image">
+        <div class="right_container">
+            <div class="text_container">
+                @Html.DisplayAllAttributes(Model)
+            </div>
+            <form asp-controller="Cart" asp-action="AddToCart">
+                <input type="hidden" name="id" value="@Model.Id"/>
+                <input type="hidden" name="urlAction" value="Details"/>
+                <input type="hidden" name="controllerName" value="Home"/>
+                <button class="to_cart_button btn btn-primary">
+                    Добавить в корзину
+                    <i class="bi bi-cart"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
