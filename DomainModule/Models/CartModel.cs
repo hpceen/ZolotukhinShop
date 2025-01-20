@@ -37,6 +37,13 @@ public class CartModel
         }
     }
 
+    public void RemoveAll(int productId)
+    {
+        var cartItem = Items.Find(cartItem => cartItem.Product.Id == productId);
+        if (cartItem == null) return;
+        Items.Remove(cartItem);
+    }
+
     public void Clear() => Items.Clear();
 
     public ProductModel? GetProduct(int productId) => Items.Find(cartItem => cartItem.Product.Id == productId)?.Product;

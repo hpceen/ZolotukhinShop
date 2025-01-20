@@ -45,4 +45,13 @@ public class CartController(ILogger<HomeController> logger, IProductRepository p
         HttpContext.Session.Set(Keys.CartModel, cart);
         return new RedirectToActionResult(urlAction, controllerName, (urlAction == "Details") ? new { id } : null);
     }
+
+    public IActionResult RemoveAllFromCart(int id, string urlAction, string controllerName)
+    {
+        var cart = HttpContext.Session.Get<CartModel>(Keys.CartModel);
+        if (cart == null) return NotFound();
+        cart.RemoveAll(id);
+        HttpContext.Session.Set(Keys.CartModel, cart);
+        return new RedirectToActionResult(urlAction, controllerName, (urlAction == "Details") ? new { id } : null);
+    }
 }

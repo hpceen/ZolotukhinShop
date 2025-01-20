@@ -51,6 +51,7 @@
 
     .card_container {
         align-self: center;
+        width: 500px;
     }
 
     .empty_container {
@@ -59,7 +60,7 @@
         align-items: center;
         height: 80vh;
     }
-    
+
     .make_order {
         display: flex;
         width: 60%;
@@ -82,6 +83,15 @@ else
         @foreach (var item in Model.Items)
         {
             <div class="card" onclick="location.href='@Url.Action("Details", "Home", new { id = item.Product.Id })'">
+                <form asp-controller="Cart" asp-action="RemoveAllFromCart">
+                    <input type="hidden" name="id" value="@item.Product.Id"/>
+                    <input type="hidden" name="urlAction" value="Index"/>
+                    <input type="hidden" name="controllerName" value="Cart"/>
+                    <button class="btn btn-danger" style="position: absolute; top: 10px; right: 10px;"
+                            asp-action="RemoveAllFromCart" asp-controller="Cart">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
                 <img src="@Url.Content("~/Images/" + item.Product.ImagePath)" alt="Изображение товара">
                 <div class="card_container">
                     <h4>@item.Product.Brand @item.Product.Name</h4>
@@ -116,8 +126,8 @@ else
                         </button>
                     </form>
                 </div>
-                <div style="align-self: center">
-                    <h3>@((item.Product.Price * item.Quantity).ToString("C", CultureInfo.CreateSpecificCulture("en-US")))</h3>
+                <div style="align-self: center; width: 200px">
+                    <h3 style="text-align: center">@((item.Product.Price * item.Quantity).ToString("C", CultureInfo.CreateSpecificCulture("en-US")))</h3>
                 </div>
             </div>
         }

@@ -8,6 +8,8 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
     public DbSet<CategoryEntity> Categories { get; set; }
     public DbSet<ProductEntity> Products { get; set; }
 
+    public DbSet<UserEntity> Users { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CategoryEntity>(entity =>
@@ -21,6 +23,11 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
             entity.HasOne<CategoryEntity>(product => product.Category)
                 .WithMany(category => category.Products)
                 .HasForeignKey(product => product.CategoryId);
+        });
+        modelBuilder.Entity<UserEntity>(entity =>
+        {
+            entity.HasIndex(user => user.Phone)
+                .IsUnique();
         });
     }
 }
