@@ -5,7 +5,7 @@
 @model ZolotukhinShop.ViewModels.IndexViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Товары";
 }
 @{
     string GetCategoryName(CategoryModel category)
@@ -154,8 +154,8 @@
         gap: 10px;
         justify-content: flex-start;
     }
-    
-    .to_cart_button_wrapper{
+
+    .to_cart_button_wrapper {
         margin-bottom: 20px;
         display: flex;
         justify-content: center;
@@ -205,7 +205,7 @@
                     @Html.IntNumericFilter("Время жизни батареи", "batteryLifeTime",
                         Model.Filter.BatteryLifeTimeFrom, Model.Filter.BatteryLifeTimeTo)
                 }
-                @if (Model.Products.Any(product => product.BatteryLifeTime != null))
+                @if (Model.Products.Any(product => product.CameraResolution != null))
                 {
                     @Html.IntNumericFilter("Разрешение камеры", "cameraResolution",
                         Model.Filter.CameraResolutionFrom, Model.Filter.CameraResolutionTo)
@@ -268,7 +268,7 @@
     </form>
     @if (Model.Products.IsNullOrEmpty())
     {
-        <div class="product_list_container" style="align-content: center">
+        <div class="product_list_container">
             <div style="align-self: center;">
                 <h1>Товары не найдены</h1>
             </div>
@@ -277,6 +277,7 @@
     else
     {
         <div class="product_list_container">
+            @{ var cart = Context.Session.Get<CartModel>(Keys.CartModel); }
             @foreach (var item in Model.Products)
             {
                 <div class="card" onclick="location.href='@Url.Action("Details", "Home", new { id = item.Id })'">
@@ -296,15 +297,43 @@
                         </p>
                     </div>
                     <div class="to_cart_button_wrapper">
-                        <form asp-controller="Cart" asp-action="AddToCart">
-                            <input type="hidden" name="id" value="@item.Id"/>
-                            <input type="hidden" name="urlAction" value="Index"/>
-                            <input type="hidden" name="controllerName" value="Home"/>
-                            <button class="to_cart_button btn btn-primary">
-                                Добавить в корзину
-                                <i class="bi bi-cart"></i>
-                            </button>
-                        </form>
+                        @{
+                            var cartItem = cart?.Items.Find(x => x.Product.Id == item.Id);
+                            if (cartItem != null)
+                            {
+                                <div class="cart_counter">
+                                    <form asp-controller="Cart" asp-action="RemoveFromCart">
+                                        <input type="hidden" name="id" value="@item.Id"/>
+                                        <input type="hidden" name="urlAction" value="Index"/>
+                                        <input type="hidden" name="controllerName" value="Home"/>
+                                        <button class="plus_to_cart btn btn-primary">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                    </form>
+                                    <span>@cartItem.Quantity</span>
+                                    <form asp-controller="Cart" asp-action="AddToCart">
+                                        <input type="hidden" name="id" value="@item.Id"/>
+                                        <input type="hidden" name="urlAction" value="Index"/>
+                                        <input type="hidden" name="controllerName" value="Home"/>
+                                        <button class="plus_to_cart btn btn-primary">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <form asp-controller="Cart" asp-action="AddToCart">
+                                    <input type="hidden" name="id" value="@item.Id"/>
+                                    <input type="hidden" name="urlAction" value="Index"/>
+                                    <input type="hidden" name="controllerName" value="Home"/>
+                                    <button class="to_cart_button btn btn-primary">
+                                        Добавить в корзину
+                                        <i class="bi bi-cart"></i>
+                                    </button>
+                                </form>
+                            }
+                        }
                     </div>
                 </div>
             }

@@ -1,0 +1,49 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Заказ";
+}
+
+<script src="lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
+<script src="js/http_cdn.jsdelivr.net_npm_jquery.maskedinput@1.4.1_src_jquery.maskedinput.js"
+        type="text/javascript"></script>
+
+<script>
+    jQuery(function ($) {
+        $(".phone-number").mask("9 (999) 999-9999");
+    });
+
+</script>
+<style>
+    .order_form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 50%;
+        margin: 0 auto;
+    }
+</style>
+
+<div class="main_div">
+    <form asp-controller="Order" asp-action="SubmitOrder" method="post">
+        <div class="order_form">
+            <div class="form-group">
+                <label for="lastName">Фамилия</label>
+                <input type="text" class="form-control" placeholder="Иванов" id="lastName" name="LastName" pattern="^[А-Яа-яЁё]+$" required>
+            </div>
+            <div class="form-group">
+                <label for="firstName">Имя</label>
+                <input type="text" class="form-control" id="firstName" placeholder="Иван" name="FirstName" pattern="^[А-Яа-яЁё]+$" required>
+            </div>
+            <div class="form-group">
+                <label for="middleName">Отчество</label>
+                <input type="text" class="form-control" id="middleName" placeholder="Иванович" name="MiddleName" pattern="^[А-Яа-яЁё]+$" required>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Номер телефона</label>
+                <input type="tel" class="phone-number form-control" id="phoneNumber" placeholder="8 (999) 999-9999" name="PhoneNumber" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Подтвердить</button>
+        </div>
+    </form>
+</div>

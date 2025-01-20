@@ -1,4 +1,4 @@
-
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Database;
 using Repositories.Interfaces;
@@ -28,9 +28,13 @@ public class Program
             options => options.UseLazyLoadingProxies().UseSqlite(
                 builder.Configuration.GetConnectionString("SQLite")));
 
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
+        builder.Services.AddAuthorization();
+
+
         var app = builder.Build();
         app.UseSession();
-        
+
         // Apply migrations at startup and initialize the database with some data (if not exists)
         using (var scope = app.Services.CreateScope())
         {
@@ -53,6 +57,7 @@ public class Program
         app.UseRouting();
 
         app.UseAuthorization();
+        app.UseAuthentication();
 
         app.MapControllerRoute(
             "default",

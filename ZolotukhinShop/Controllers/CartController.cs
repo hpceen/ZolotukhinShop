@@ -10,7 +10,7 @@ public class CartController(ILogger<HomeController> logger, IProductRepository p
     private readonly IProductRepository _productRepository = productRepository;
     private readonly ILogger<HomeController> _logger = logger;
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
         var cart = HttpContext.Session.Get<CartModel>(Keys.CartModel) ?? new CartModel();
         return View(cart);
@@ -28,6 +28,21 @@ public class CartController(ILogger<HomeController> logger, IProductRepository p
         var cart = HttpContext.Session.Get<CartModel>(Keys.CartModel) ?? new CartModel();
         cart.Add(product);
         HttpContext.Session.Set(Keys.CartModel, cart);
-        return new RedirectToActionResult(urlAction, controllerName, new { id });
+        return new RedirectToActionResult(urlAction, controllerName, (urlAction == "Details") ? new { id } : null);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RemoveFromCart(int id, string urlAction, string controllerName)
+    {
+        var product = await _productRepository.GetById(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        var cart = HttpContext.Session.Get<CartModel>(Keys.CartModel) ?? new CartModel();
+        cart.Remove(product);
+        HttpContext.Session.Set(Keys.CartModel, cart);
+        return new RedirectToActionResult(urlAction, controllerName, (urlAction == "Details") ? new { id } : null);
     }
 }

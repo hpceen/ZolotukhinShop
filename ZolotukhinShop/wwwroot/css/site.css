@@ -20,3 +20,12 @@ html {
 body {
     margin-bottom: 60px;
 }
+
+.cart_counter {
+    align-self: center;
+    gap: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}

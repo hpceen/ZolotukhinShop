@@ -42,11 +42,4 @@ public class HomeController(
 
         return View(product);
     }
-    
-    public async Task<IActionResult> AddToCart(int id)
-    {
-        var count = HttpContext.Session.GetInt32("cartCount"); 
-        HttpContext.Session.SetInt32("cartCount", ++count ?? 1);
-        return RedirectToAction("Index");
-    }
 }
