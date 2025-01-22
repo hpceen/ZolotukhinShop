@@ -246,6 +246,15 @@ public static class DatabaseInitializer
 
         if (context.Products.Any()) return;
         context.Products.AddRange(productList);
+        if (context.Users.Any()) return;
+        context.Users.Add(new UserEntity
+        {
+            LastName = "Золотухин",
+            FirstName = "Георгий",
+            Patronymic = "Дмитриевич",
+            Phone = "7 (919) 172-83-53",
+            Password = "12345"
+        });
         context.SaveChanges();
     }
 }

@@ -42,7 +42,14 @@
                     </li>
                 </ul>
             </div>
-            <a asp-controller="Login" asp-action="Index" class="btn btn-primary ms-5">Войти</a>
+            @if (Context.User.Identity?.IsAuthenticated ?? false)
+            {
+                <a asp-controller="Login" asp-action="Logout" class="btn btn-primary ms-5">Выйти</a>
+            }
+            else
+            {
+                <a asp-controller="Login" asp-action="Index" class="btn btn-primary ms-5">Войти</a>
+            }
         </div>
     </nav>
 </header>

@@ -13,6 +13,7 @@ public class Program
         services.AddControllersWithViews();
         services.AddTransient<IProductRepository, ProductRepository>();
         services.AddTransient<ICategoryRepository, CategoryRepository>();
+        services.AddTransient<IUserRepository, UserRepository>();
         services.AddDistributedMemoryCache();
         services.AddSession();
     }
@@ -28,7 +29,7 @@ public class Program
             options => options.UseLazyLoadingProxies().UseSqlite(
                 builder.Configuration.GetConnectionString("SQLite")));
 
-        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme);
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
         builder.Services.AddAuthorization();
 
 

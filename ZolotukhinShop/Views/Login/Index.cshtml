@@ -20,18 +20,18 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
         <h4 class="text-center mb-4">@(Model ?? "Вход")</h4>
-        <form asp-action="" asp-controller="Login">
+        <form asp-action="Login" asp-controller="Login">
             <!-- Поле для телефона -->
             <div class="mb-3">
                 <label for="phone" class="form-label">Телефон</label>
-                <input type="tel" class="phone-number form-control" id="phone" placeholder="Введите номер телефона"
+                <input type="tel" class="phone-number form-control" id="phone" name="phone" placeholder="Введите номер телефона"
                        required>
             </div>
 
             <!-- Поле для пароля -->
             <div class="mb-3">
                 <label for="password" class="form-label">Пароль</label>
-                <input type="password" class="form-control" id="password" placeholder="Введите пароль" required>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Введите пароль" required>
             </div>
 
             <!-- Кнопка входа -->
