@@ -1,4 +1,8 @@
-@model string?
+@{
+    var error = ViewData["Error"] as string;
+}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +23,11 @@
 <body>
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
-        <h4 class="text-center mb-4">@(Model ?? "Вход")</h4>
+        <h4 class="text-center mb-4">"Вход"</h4>
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <div class="error">@error</div>
+        }
         <form asp-action="Login" asp-controller="Login">
             <!-- Поле для телефона -->
             <div class="mb-3">

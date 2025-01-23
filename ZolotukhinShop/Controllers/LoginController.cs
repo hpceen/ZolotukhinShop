@@ -7,10 +7,10 @@ namespace ZolotukhinShop.Controllers;
 
 public class LoginController(IUserRepository userRepository) : Controller
 {
-    // GET
-    public IActionResult Index(string error)
+    public IActionResult Index(string? error = null)
     {
-        return View(error);
+        ViewData["Error"] = error;
+        return View();
     }
 
     [HttpPost]
